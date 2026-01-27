@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>8FebWebTertis</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+
+<body class="page">
+  <div class="bgGlow"></div>
+
+  <main class="shell">
+    <section class="heroCard" aria-label="8FebWebTertis landing">
+      <header class="heroHead">
+        <div class="brand">
+          <div class="brandMark" aria-hidden="true">
+            <img
+              class="logoImg"
+              src="{{ url_for('static', filename='logo.png') }}"
+              alt="8Feb logo"
+            />
+          </div>
+          <div class="brandText">
+            <div class="brandTitle">8FEBWEBTERTIS</div>
+            <div class="brandSub">โดย ประชาชน</div>
+          </div>
+        </div>
+        <div class="heroLine"></div>
+      </header>
+
+      <div class="heroCopy">
+        <h1 class="heroH1">PLAY THE GRID</h1>
+        <p class="heroP">{{ landing_message }}</p>
+      </div>
+
+      {% if error %}
+        <div class="banner danger" role="alert">{{ error }}</div>
+      {% endif %}
+
+      <div class="twoCol">
+        <form method="POST" action="/create" class="panel" aria-label="Create room form">
+          <div class="panelTitle">สร้างห้องใหม่</div>
+          <p class="panelDesc">สร้างรหัสห้องแล้วแชร์ให้เพื่อน เพื่อเล่นพร้อมกันแบบแข่งขัน</p>
+          <button class="btn primary" type="submit">
+            <span class="btnGlow" aria-hidden="true"></span>
+            CREATE ROOM
+          </button>
+        </form>
+
+        <form method="POST" action="/join" class="panel" aria-label="Join room form">
+          <div class="panelTitle">เข้าร่วมห้อง</div>
+          <label class="label" for="room_id">ROOM CODE</label>
+          <input id="room_id" class="input" name="room_id" placeholder="เช่น ABC123" autocomplete="off" required />
+          <button class="btn secondary" type="submit">
+            <span class="btnGlow" aria-hidden="true"></span>
+            JOIN
+          </button>
+        </form>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
