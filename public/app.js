@@ -229,46 +229,24 @@
     }
   });
 
-  const touchButtons = document.querySelectorAll(".touchBtn");
-  for (const btn of touchButtons) {
-    const action = btn.dataset.action || "";
-    const repeat = btn.dataset.repeat === "true";
-    let holdTimer = null;
-
-    function startHold(e) {
+  const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+  if (isTouch) {
+    boardCanvas.addEventListener("pointerdown", (e) => {
       e.preventDefault();
-      if (action === "DOWN") {
-        if (!downHeld) {
-          downHeld = true;
-          pushAction("DOWN_ON");
-          nextGravityAt = Date.now() + currentFallMs();
-        }
-        return;
-      }
+      const rect = boardCanvas.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
 
-      pushAction(action);
-      if (repeat) {
-        holdTimer = setInterval(() => pushAction(action), 80);
+      if (y <= 0.25) {
+        pushAction("ROTATE");
+      } else if (y >= 0.75) {
+        pushAction("HARD_DROP");
+      } else if (x < 0.5) {
+        pushAction("LEFT");
+      } else {
+        pushAction("RIGHT");
       }
-    }
-
-    function endHold(e) {
-      e.preventDefault();
-      if (holdTimer) {
-        clearInterval(holdTimer);
-        holdTimer = null;
-      }
-      if (action === "DOWN" && downHeld) {
-        downHeld = false;
-        pushAction("DOWN_OFF");
-        nextGravityAt = Date.now() + currentFallMs();
-      }
-    }
-
-    btn.addEventListener("pointerdown", startHold);
-    btn.addEventListener("pointerup", endHold);
-    btn.addEventListener("pointerleave", endHold);
-    btn.addEventListener("pointercancel", endHold);
+    });
   }
 
   let lastOk = Date.now();

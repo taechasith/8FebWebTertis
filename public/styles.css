@@ -318,6 +318,7 @@ body{
   border:1px solid rgba(255,255,255,0.10);
   background:rgba(0,0,0,0.18);
   overflow:hidden;
+  touch-action:manipulation;
 }
 .boardWrap::before{
   content:"";
@@ -408,28 +409,6 @@ body{
   color:rgba(255,255,255,0.76);
 }
 
-.touchHeader{margin-top:14px;}
-.touchControls{
-  display:grid;
-  grid-template-columns:repeat(2, minmax(0, 1fr));
-  gap:10px;
-  margin-top:10px;
-}
-.touchBtn{
-  padding:14px 12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.16);
-  background:rgba(0,0,0,0.30);
-  color:rgba(255,255,255,0.90);
-  font-weight:900;
-  letter-spacing:.10em;
-  text-transform:uppercase;
-  cursor:pointer;
-  user-select:none;
-  touch-action:manipulation;
-}
-.touchBtn.wide{grid-column:1 / -1;}
-.touchBtn:active{transform:translateY(1px) scale(0.99);}
 
 /* Toast (yellow) */
 .toast{
@@ -553,8 +532,6 @@ body{
   .oppWrap{padding:10px;}
   .toastInner{flex-direction:column;align-items:flex-start;}
   .toastBtn{width:100%;text-align:center;}
-  .touchControls{grid-template-columns:repeat(3, minmax(0, 1fr));}
-  .touchBtn{padding:12px 8px;font-size:12px;}
 }
 
 @media (max-width:380px){
