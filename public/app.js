@@ -229,6 +229,48 @@
     }
   });
 
+  const touchButtons = document.querySelectorAll(".touchBtn");
+  for (const btn of touchButtons) {
+    const action = btn.dataset.action || "";
+    const repeat = btn.dataset.repeat === "true";
+    let holdTimer = null;
+
+    function startHold(e) {
+      e.preventDefault();
+      if (action === "DOWN") {
+        if (!downHeld) {
+          downHeld = true;
+          pushAction("DOWN_ON");
+          nextGravityAt = Date.now() + currentFallMs();
+        }
+        return;
+      }
+
+      pushAction(action);
+      if (repeat) {
+        holdTimer = setInterval(() => pushAction(action), 80);
+      }
+    }
+
+    function endHold(e) {
+      e.preventDefault();
+      if (holdTimer) {
+        clearInterval(holdTimer);
+        holdTimer = null;
+      }
+      if (action === "DOWN" && downHeld) {
+        downHeld = false;
+        pushAction("DOWN_OFF");
+        nextGravityAt = Date.now() + currentFallMs();
+      }
+    }
+
+    btn.addEventListener("pointerdown", startHold);
+    btn.addEventListener("pointerup", endHold);
+    btn.addEventListener("pointerleave", endHold);
+    btn.addEventListener("pointercancel", endHold);
+  }
+
   let lastOk = Date.now();
   let inFlight = false;
   let backoffMs = 0;

@@ -408,6 +408,29 @@ body{
   color:rgba(255,255,255,0.76);
 }
 
+.touchHeader{margin-top:14px;}
+.touchControls{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:10px;
+  margin-top:10px;
+}
+.touchBtn{
+  padding:14px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.16);
+  background:rgba(0,0,0,0.30);
+  color:rgba(255,255,255,0.90);
+  font-weight:900;
+  letter-spacing:.10em;
+  text-transform:uppercase;
+  cursor:pointer;
+  user-select:none;
+  touch-action:manipulation;
+}
+.touchBtn.wide{grid-column:1 / -1;}
+.touchBtn:active{transform:translateY(1px) scale(0.99);}
+
 /* Toast (yellow) */
 .toast{
   position:fixed;
@@ -508,14 +531,30 @@ body{
 }
 
 @media (max-width:520px){
+  .gameGrid{
+    grid-template-columns:minmax(0,1fr) minmax(0,120px);
+    grid-template-areas:
+      "board opp"
+      "stats stats"
+      "info info"
+      "controls controls";
+  }
+  .boardPanel{grid-area:board;}
+  .oppCard{grid-area:opp;}
+  .controlsCard{grid-area:controls;}
+  .sideStack{display:contents;}
+  .statsRow{grid-area:stats;}
+  .infoCard{grid-area:info;}
   .roomPill,.connPill{padding:8px 10px;}
   .panelTitle{font-size:11px;}
   .statV{font-size:22px;}
-  .boardWrap{width:min(92vw, 360px);margin:0 auto;}
+  .boardWrap{width:100%;margin:0 auto;}
   #opp{width:100%;height:auto;aspect-ratio:1 / 2;}
   .oppWrap{padding:10px;}
   .toastInner{flex-direction:column;align-items:flex-start;}
   .toastBtn{width:100%;text-align:center;}
+  .touchControls{grid-template-columns:repeat(3, minmax(0, 1fr));}
+  .touchBtn{padding:12px 8px;font-size:12px;}
 }
 
 @media (max-width:380px){
