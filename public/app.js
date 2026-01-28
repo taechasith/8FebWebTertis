@@ -38,6 +38,8 @@
 
   const actions = [];
   let downHeld = false;
+  const FALL_MS = parseInt(wrap.dataset.fallMs || "600", 10);
+  const FALL_FAST_MS = parseInt(wrap.dataset.fallFastMs || "55", 10);
 
   let px = 0, py = 0;
   function nudgeParallax(dx, dy) {
@@ -52,7 +54,10 @@
     py *= 0.8;
   }
 
-  function pushAction(a) { actions.push(a); }
+  function pushAction(a) {
+    actions.push(a);
+    requestTickSoon();
+  }
 
   function setConnStatus(mode) {
     if (mode === "ONLINE") {
@@ -210,6 +215,7 @@
       if (!downHeld) {
         downHeld = true;
         pushAction("DOWN_ON");
+        nextGravityAt = Date.now() + currentFallMs();
         nudgeParallax(0, 2);
       }
     }
@@ -219,15 +225,31 @@
     if (e.code === "ArrowDown") {
       downHeld = false;
       pushAction("DOWN_OFF");
+      nextGravityAt = Date.now() + currentFallMs();
     }
   });
 
-  let lastStep = 0;
-  const STEP_EVERY_MS = 120;
   let lastOk = Date.now();
   let inFlight = false;
   let backoffMs = 0;
   let backoffUntil = 0;
+  let nextGravityAt = Date.now() + FALL_MS;
+  let loopTimer = null;
+
+  function currentFallMs() {
+    return downHeld ? FALL_FAST_MS : FALL_MS;
+  }
+
+  function scheduleNext(delay) {
+    if (loopTimer) clearTimeout(loopTimer);
+    const safeDelay = Math.max(10, delay | 0);
+    loopTimer = setTimeout(tick, safeDelay);
+  }
+
+  function requestTickSoon() {
+    if (document.hidden) return;
+    scheduleNext(0);
+  }
 
   async function step() {
     if (inFlight) return;
@@ -250,6 +272,7 @@
       backoffMs = 0;
       backoffUntil = 0;
       setConnStatus("ONLINE");
+      nextGravityAt = Date.now() + currentFallMs();
 
       const self = data.self;
       scoreEl.textContent = String(self.score);
@@ -289,26 +312,26 @@
       if (!backoffMs) backoffMs = 500;
       else backoffMs = Math.min(8000, Math.floor(backoffMs * 1.6));
       backoffUntil = Date.now() + backoffMs;
+      scheduleNext(backoffMs);
     } finally {
       inFlight = false;
+      if (!backoffMs) scheduleNext(currentFallMs());
     }
   }
 
-  function loop(ts) {
-    if (!lastStep) lastStep = ts;
-    const dt = ts - lastStep;
-
+  function tick() {
     if (document.hidden) {
-      requestAnimationFrame(loop);
+      scheduleNext(200);
       return;
     }
 
-    if (dt >= STEP_EVERY_MS) {
-      lastStep = ts;
-      step();
+    const now = Date.now();
+    if (!actions.length && now < nextGravityAt) {
+      scheduleNext(Math.min(nextGravityAt - now, 100));
+      return;
     }
 
-    requestAnimationFrame(loop);
+    step();
   }
 
   // Initial paint
@@ -316,5 +339,5 @@
   ctx.fillRect(0, 0, boardCanvas.width, boardCanvas.height);
   drawGrid(ctx, boardCanvas.width, boardCanvas.height, cell);
 
-  requestAnimationFrame(loop);
+  scheduleNext(currentFallMs());
 })();

@@ -3,7 +3,12 @@ from __future__ import annotations
 from pathlib import Path
 from flask import Flask, render_template, request, redirect, jsonify, abort
 
-from tertis.config import LANDING_MESSAGE, GAME_OVER_MESSAGE
+from tertis.config import (
+    LANDING_MESSAGE,
+    GAME_OVER_MESSAGE,
+    TICK_FALL_MS,
+    TICK_FALL_MS_FAST,
+)
 from tertis.rooms import RoomManager
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -62,6 +67,8 @@ def play(room_id: str):
         room_id=room.room_id,
         player_id=player_id,
         game_over_message=GAME_OVER_MESSAGE,
+        fall_ms=TICK_FALL_MS,
+        fall_fast_ms=TICK_FALL_MS_FAST,
     )
 
 
