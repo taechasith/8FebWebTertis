@@ -230,6 +230,7 @@
   });
 
   const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+  const boardWrap = playerPanel.querySelector(".boardWrap");
   function handleTap(clientX, clientY) {
     const rect = boardCanvas.getBoundingClientRect();
     const x = (clientX - rect.left) / rect.width;
@@ -246,17 +247,23 @@
     }
   }
 
-  if (isTouch) {
-    boardCanvas.addEventListener("pointerdown", (e) => {
+  const touchTargets = [boardCanvas, boardWrap].filter(Boolean);
+  for (const target of touchTargets) {
+    target.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "mouse") return;
       e.preventDefault();
       handleTap(e.clientX, e.clientY);
-    });
-    boardCanvas.addEventListener("touchstart", (e) => {
+    }, { passive: false });
+    target.addEventListener("touchstart", (e) => {
       if (!e.touches || e.touches.length === 0) return;
       e.preventDefault();
       const t = e.touches[0];
       handleTap(t.clientX, t.clientY);
     }, { passive: false });
+    target.addEventListener("click", (e) => {
+      if (!isTouch) return;
+      handleTap(e.clientX, e.clientY);
+    });
   }
 
   let lastOk = Date.now();
