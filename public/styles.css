@@ -343,7 +343,15 @@ body{
   transition:transform 240ms ease;
   pointer-events:none;
 }
-#board{position:relative;z-index:1;display:block;border-radius:12px;}
+#board{
+  position:relative;
+  z-index:1;
+  display:block;
+  border-radius:12px;
+  width:100%;
+  height:auto;
+  aspect-ratio:1 / 2;
+}
 
 .sideStack{display:flex;flex-direction:column;gap:14px;}
 .statsRow{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
@@ -476,3 +484,44 @@ body{
 }
 .modalActions{display:flex;justify-content:flex-end;gap:10px;margin-top:14px;flex-wrap:wrap;}
 .hidden{display:none;}
+
+@media (max-width:860px){
+  .topbar{
+    grid-template-columns:1fr;
+    justify-items:center;
+    gap:8px;
+    padding:10px 12px;
+  }
+  .topLeft,.topCenter,.topRight{justify-self:center;}
+  .topRight{flex-wrap:wrap;justify-content:center;}
+  .gameShell{padding:12px;}
+}
+
+@media (max-width:720px){
+  .gameGrid{grid-template-columns:1fr;gap:12px;}
+  .boardPanel{grid-row:auto;padding:12px;}
+  .boardWrap{padding:10px;}
+  .sideStack{gap:12px;}
+  .controlsCard{padding:12px;}
+  .keyBtn{flex:1 1 44%;justify-content:center;}
+  .keyBtn.wide{flex:1 1 100%;}
+}
+
+@media (max-width:520px){
+  .roomPill,.connPill{padding:8px 10px;}
+  .panelTitle{font-size:11px;}
+  .statV{font-size:22px;}
+  .boardWrap{width:min(92vw, 360px);margin:0 auto;}
+  #opp{width:100%;height:auto;aspect-ratio:1 / 2;}
+  .oppWrap{padding:10px;}
+  .toastInner{flex-direction:column;align-items:flex-start;}
+  .toastBtn{width:100%;text-align:center;}
+}
+
+@media (max-width:380px){
+  .brandText .brandTitle{font-size:11px;}
+  .brandText .brandSub{font-size:10px;}
+  .btn{padding:10px 12px;font-size:11px;}
+  .roomCode{font-size:12px;}
+  .keycap{min-width:30px;height:28px;}
+}
