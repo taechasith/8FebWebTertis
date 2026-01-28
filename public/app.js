@@ -501,6 +501,11 @@
     step(actionsIn) {
       const events = [];
       if (this.game_over) {
+        if (!this.gameOverSent) {
+          this.gameOverSent = true;
+          const q = this.randomQuote();
+          events.push({ kind: "GAME_OVER", payload: { quote: q } });
+        }
         return this.snapshotPayload(events);
       }
 
@@ -721,7 +726,7 @@
     mode = "multi";
     setConnStatus("CONNECTING");
     oppStatusEl.textContent = "WAITING";
-    modeText.textContent = "Waiting for opponent to join...";
+    modeText.textContent = `Waiting for opponent... Room code: ${roomId}`;
     modeSolo.disabled = true;
     modeMulti.disabled = true;
     pollStatus();
