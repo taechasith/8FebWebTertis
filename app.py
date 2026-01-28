@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import json
 from flask import Flask, render_template, request, redirect, jsonify, abort
 
 from tertis.config import (
@@ -13,6 +14,11 @@ from tertis.rooms import RoomManager
 
 BASE_DIR = Path(__file__).resolve().parent
 QUOTES_PATH = BASE_DIR / "data" / "quotes_th.txt"
+QUOTES = [
+    line.strip()
+    for line in QUOTES_PATH.read_text(encoding="utf-8", errors="ignore").splitlines()
+    if line.strip()
+]
 
 app = Flask(
     __name__,
@@ -69,6 +75,7 @@ def play(room_id: str):
         game_over_message=GAME_OVER_MESSAGE,
         fall_ms=TICK_FALL_MS,
         fall_fast_ms=TICK_FALL_MS_FAST,
+        quotes_json=json.dumps(QUOTES, ensure_ascii=False),
     )
 
 
@@ -110,6 +117,14 @@ def api_restart(room_id: str):
 
     room.restart_player(player_id)
     return jsonify({"ok": True})
+
+
+@app.get("/api/room/<room_id>/status")
+def api_status(room_id: str):
+    room = rooms.get_room(room_id.strip().upper())
+    if room is None:
+        abort(404)
+    return jsonify(room.status())
 
 
 @app.get("/healthz")

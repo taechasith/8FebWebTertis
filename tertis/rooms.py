@@ -15,6 +15,10 @@ def now_s() -> int:
     return int(time.time())
 
 
+def now_ms() -> int:
+    return int(time.time() * 1000)
+
+
 @dataclass
 class Event:
     kind: str
@@ -32,6 +36,7 @@ class Room:
     quotes_path: Path
     created_s: int = field(default_factory=now_s)
     last_seen_s: int = field(default_factory=now_s)
+    start_at_ms: Optional[int] = None
 
     engine: TertisEngine = field(init=False)
     players: Dict[str, PlayerState] = field(default_factory=dict)
@@ -61,6 +66,8 @@ class Room:
         self.players[player_id] = ps
         self.events[player_id] = []
         self._push(player_id, "JOINED", {"room_id": self.room_id})
+        if len(self.players) == ROOM_MAX_PLAYERS and self.start_at_ms is None:
+            self.start_at_ms = now_ms() + 500
         return player_id
 
     def _push(self, player_id: str, kind: str, payload: dict) -> None:
@@ -78,6 +85,24 @@ class Room:
     def step_player(self, player_id: str, actions: List[str]) -> dict:
         self.touch()
         ps = self.players[player_id]
+
+        if self.start_at_ms is not None and now_ms() < self.start_at_ms:
+            return {
+                "self": ps.snapshot(),
+                "opponents": [
+                    {
+                        "player_id": oid,
+                        "board": ops.board.tolist(),
+                        "active": None if ops.active is None else ops.active.to_dict(),
+                        "score": ops.score,
+                        "lines": ops.lines,
+                        "game_over": ops.game_over,
+                    }
+                    for oid, ops in self.players.items()
+                    if oid != player_id
+                ],
+                "events": self.pop_events(player_id),
+            }
 
         effects = self.engine.step(ps, actions)
         cleared = int(effects.get("cleared", 0))
@@ -120,6 +145,12 @@ class Room:
             "self": ps.snapshot(),
             "opponents": opponents,
             "events": self.pop_events(player_id),
+        }
+
+    def status(self) -> dict:
+        return {
+            "players": len(self.players),
+            "start_at_ms": self.start_at_ms,
         }
 
     def restart_player(self, player_id: str) -> None:

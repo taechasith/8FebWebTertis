@@ -169,6 +169,24 @@ https://drive.google.com/drive/folders/17FAg-QNu4yKoU7GpfTOJEVKsQ0xgGYFe - à¸£à¹
     </div>
   </div>
 
+  <div id="modeModal" class="modal" role="dialog" aria-modal="true" aria-label="Game Mode">
+    <div class="modalCard">
+      <div class="modalTitle">PLAY MODE</div>
+      <div class="modalBody" id="modeText">Choose how you want to play this room.</div>
+      <div class="modalActions">
+        <button class="btn primary" id="modeSolo" type="button">
+          <span class="btnGlow" aria-hidden="true"></span>
+          SOLO
+        </button>
+        <button class="btn secondary" id="modeMulti" type="button">
+          <span class="btnGlow" aria-hidden="true"></span>
+          WITH OTHERS
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script id="quotesData" type="application/json">{{ quotes_json | safe }}</script>
   <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>
