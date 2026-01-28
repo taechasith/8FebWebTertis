@@ -229,6 +229,46 @@
     }
   });
 
+  const keyButtons = document.querySelectorAll(".keyBtn[data-action]");
+  for (const btn of keyButtons) {
+    const action = btn.dataset.action || "";
+    let holdTimer = null;
+
+    function startPress(e) {
+      e.preventDefault();
+      if (action === "DOWN") {
+        if (!downHeld) {
+          downHeld = true;
+          pushAction("DOWN_ON");
+          nextGravityAt = Date.now() + currentFallMs();
+        }
+        return;
+      }
+      pushAction(action);
+      if (action === "LEFT" || action === "RIGHT") {
+        holdTimer = setInterval(() => pushAction(action), 90);
+      }
+    }
+
+    function endPress(e) {
+      e.preventDefault();
+      if (holdTimer) {
+        clearInterval(holdTimer);
+        holdTimer = null;
+      }
+      if (action === "DOWN" && downHeld) {
+        downHeld = false;
+        pushAction("DOWN_OFF");
+        nextGravityAt = Date.now() + currentFallMs();
+      }
+    }
+
+    btn.addEventListener("pointerdown", startPress);
+    btn.addEventListener("pointerup", endPress);
+    btn.addEventListener("pointerleave", endPress);
+    btn.addEventListener("pointercancel", endPress);
+  }
+
   const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
   const boardWrap = playerPanel.querySelector(".boardWrap");
   function handleTap(clientX, clientY) {
