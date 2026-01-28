@@ -225,52 +225,72 @@
   let lastStep = 0;
   const STEP_EVERY_MS = 120;
   let lastOk = Date.now();
+  let inFlight = false;
+  let backoffMs = 0;
+  let backoffUntil = 0;
 
   async function step() {
+    if (inFlight) return;
+    const now = Date.now();
+    if (backoffMs && now < backoffUntil) return;
+    inFlight = true;
     const payload = { player_id: playerId, actions: actions.splice(0, actions.length) };
 
-    const res = await fetch(`/api/room/${roomId}/step`, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(payload),
-    });
+    try {
+      const res = await fetch(`/api/room/${roomId}/step`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload),
+      });
 
-    if (!res.ok) throw new Error("bad response");
+      if (!res.ok) throw new Error("bad response");
 
-    const data = await res.json();
-    lastOk = Date.now();
-    setConnStatus("ONLINE");
+      const data = await res.json();
+      lastOk = Date.now();
+      backoffMs = 0;
+      backoffUntil = 0;
+      setConnStatus("ONLINE");
 
-    const self = data.self;
-    scoreEl.textContent = String(self.score);
-    linesEl.textContent = String(self.lines);
+      const self = data.self;
+      scoreEl.textContent = String(self.score);
+      linesEl.textContent = String(self.lines);
 
-    drawBoard(ctx, self.board, self.active, cell, boardCanvas.width, boardCanvas.height, true);
+      drawBoard(ctx, self.board, self.active, cell, boardCanvas.width, boardCanvas.height, true);
 
-    if (data.opponents && data.opponents.length > 0) {
-      const op = data.opponents[0];
-      oppStatusEl.textContent = op.game_over ? "GAME OVER" : `SCORE ${op.score}`;
-      const ocell = Math.floor(oppCanvas.height / 20);
-      drawBoard(octx, op.board, op.active, ocell, oppCanvas.width, oppCanvas.height, false);
-    } else {
-      oppStatusEl.textContent = "WAITING";
-      clearCanvas(octx, oppCanvas.width, oppCanvas.height);
-      octx.fillStyle = "rgba(0,0,0,0.22)";
-      octx.fillRect(0, 0, oppCanvas.width, oppCanvas.height);
-      drawGrid(octx, oppCanvas.width, oppCanvas.height, Math.floor(oppCanvas.height / 20));
-    }
+      if (data.opponents && data.opponents.length > 0) {
+        const op = data.opponents[0];
+        oppStatusEl.textContent = op.game_over ? "GAME OVER" : `SCORE ${op.score}`;
+        const ocell = Math.floor(oppCanvas.height / 20);
+        drawBoard(octx, op.board, op.active, ocell, oppCanvas.width, oppCanvas.height, false);
+      } else {
+        oppStatusEl.textContent = "WAITING";
+        clearCanvas(octx, oppCanvas.width, oppCanvas.height);
+        octx.fillStyle = "rgba(0,0,0,0.22)";
+        octx.fillRect(0, 0, oppCanvas.width, oppCanvas.height);
+        drawGrid(octx, oppCanvas.width, oppCanvas.height, Math.floor(oppCanvas.height / 20));
+      }
 
-    if (data.events) {
-      for (const ev of data.events) {
-        if (ev.kind === "QUOTE" && ev.payload && ev.payload.text) {
-          showToast(ev.payload.text);
-        }
-        if (ev.kind === "GAME_OVER") {
-          const q = (ev.payload && ev.payload.quote) ? ev.payload.quote : "";
-          showGameOver(q);
-          if (q) showToast(q);
+      if (data.events) {
+        for (const ev of data.events) {
+          if (ev.kind === "QUOTE" && ev.payload && ev.payload.text) {
+            showToast(ev.payload.text);
+          }
+          if (ev.kind === "GAME_OVER") {
+            const q = (ev.payload && ev.payload.quote) ? ev.payload.quote : "";
+            showGameOver(q);
+            if (q) showToast(q);
+          }
         }
       }
+    } catch (err) {
+      const since = Date.now() - lastOk;
+      if (since > 3500) setConnStatus("OFFLINE");
+      else setConnStatus("RECONNECTING");
+      if (!backoffMs) backoffMs = 500;
+      else backoffMs = Math.min(8000, Math.floor(backoffMs * 1.6));
+      backoffUntil = Date.now() + backoffMs;
+    } finally {
+      inFlight = false;
     }
   }
 
@@ -278,13 +298,14 @@
     if (!lastStep) lastStep = ts;
     const dt = ts - lastStep;
 
+    if (document.hidden) {
+      requestAnimationFrame(loop);
+      return;
+    }
+
     if (dt >= STEP_EVERY_MS) {
       lastStep = ts;
-      step().catch(() => {
-        const since = Date.now() - lastOk;
-        if (since > 3500) setConnStatus("OFFLINE");
-        else setConnStatus("RECONNECTING");
-      });
+      step();
     }
 
     requestAnimationFrame(loop);
