@@ -230,23 +230,33 @@
   });
 
   const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+  function handleTap(clientX, clientY) {
+    const rect = boardCanvas.getBoundingClientRect();
+    const x = (clientX - rect.left) / rect.width;
+    const y = (clientY - rect.top) / rect.height;
+
+    if (y <= 0.25) {
+      pushAction("ROTATE");
+    } else if (y >= 0.75) {
+      pushAction("HARD_DROP");
+    } else if (x < 0.5) {
+      pushAction("LEFT");
+    } else {
+      pushAction("RIGHT");
+    }
+  }
+
   if (isTouch) {
     boardCanvas.addEventListener("pointerdown", (e) => {
       e.preventDefault();
-      const rect = boardCanvas.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
-
-      if (y <= 0.25) {
-        pushAction("ROTATE");
-      } else if (y >= 0.75) {
-        pushAction("HARD_DROP");
-      } else if (x < 0.5) {
-        pushAction("LEFT");
-      } else {
-        pushAction("RIGHT");
-      }
+      handleTap(e.clientX, e.clientY);
     });
+    boardCanvas.addEventListener("touchstart", (e) => {
+      if (!e.touches || e.touches.length === 0) return;
+      e.preventDefault();
+      const t = e.touches[0];
+      handleTap(t.clientX, t.clientY);
+    }, { passive: false });
   }
 
   let lastOk = Date.now();
