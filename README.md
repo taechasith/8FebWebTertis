@@ -1,4 +1,4 @@
-# 8FebWebTertis (8FEBWEBTERTIS)
+# 8FebWebTertis #8กุมภากาเห็นชอบ
 
 **A web-based persuasive civic game for the 8 Feb 2569 (2026) constitutional-referendum moment**
 Demo: `8feb.creativelabth.com`
@@ -28,7 +28,7 @@ To keep the message space adaptable and accountable, the “reasons” are produ
   * [Randomization strategy](#randomization-strategy)
   * [Data, provenance, and editability](#data-provenance-and-editability)
   * [Safety, reliability, and governance](#safety-reliability-and-governance)
-* [Discussion (HCI)](#discussion-hci)
+* [Discussion: Human-Computing Interation Science]
 * [Evaluation plan](#evaluation-plan)
 * [Limitations](#limitations)
 * [How to run locally](#how-to-run-locally)
@@ -229,7 +229,7 @@ Because LLMs can hallucinate, the runtime system should assume:
 
 ---
 
-## Discussion: Human-Comouting Interation Science
+## Discussion: Human-Computing Interation Science
 
 This project sits at an intersection of **persuasive technology**, **procedural rhetoric**, and **playful civic participation**.
 
