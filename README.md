@@ -28,7 +28,7 @@ To keep the message space adaptable and accountable, the “reasons” are produ
   * [Randomization strategy](#randomization-strategy)
   * [Data, provenance, and editability](#data-provenance-and-editability)
   * [Safety, reliability, and governance](#safety-reliability-and-governance)
-* [Discussion: Human-Computing Interation Science]
+* Discussion: Human-Computing Interation Science
 * [Evaluation plan](#evaluation-plan)
 * [Limitations](#limitations)
 * [How to run locally](#how-to-run-locally)
