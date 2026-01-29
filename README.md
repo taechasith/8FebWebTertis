@@ -9,8 +9,9 @@ Demo: `8feb.creativelabth.com`
 
 ## Abstract
 
-**8FebWebTertis** is a web game inspired by Tetris-style play and “Tetris psychology” (high visuospatial load, fast cycles of attention and action) and repurposed as a *civic-tech campaign artifact*. The core idea is simple: players **play a grid game** either **solo** or **in a room with friends**, and the system surfaces **randomized, bite-sized reasons** aligned with *“กาเห็นชอบการร่างรัฐธรรมนูญใหม่”* (approve drafting a new constitution).
-To keep the message space adaptable and accountable, the “reasons” are produced via an **LLM-assisted pipeline** that can continuously ingest public web material, while remaining **expert-editable** over time.
+8FebWebTertis is a web game inspired by Tetris-style play and “Tetris psychology” (high visuospatial load, fast cycles of attention and action) and repurposed as a civic-tech campaign artifact aligned with the #8กุมภากาเห็นชอบ movement. Unlike neutral puzzle games, 8FebWebTertis actively supports the campaign framing by surfacing bite-sized “reason cards” during play that explain why a user should กาเห็นชอบการร่างรัฐธรรมนูญใหม่ (approve drafting a new constitution). These reasons emerge at key interaction points—whether the player wins or loses, and both in solo and multiplayer rooms—ensuring that every session includes structured exposure to campaign-aligned reasoning.
+
+To maintain adaptability and credibility, the “reason cards” are generated through a LLM-assisted pipeline that continuously ingests curated web material relevant to the referendum and produces concise, campaign-aligned prompts. These prompts are then subjected to expert review and editing before being included in the game’s runtime dataset. The result is a game experience where the core mechanics of play are directly tied to exposure to reasons supporting the #8กุมภากาเห็นชอบ message, creating a blended interaction that combines engaging gameplay with sustained, context-specific civic communication.
 
 ---
 
