@@ -3,6 +3,8 @@
 **A web-based persuasive civic game for the 8 Feb 2569 (2026) constitutional-referendum moment**
 Demo: `8feb.creativelabth.com`
 
+<img width="828" height="463" alt="image" src="https://github.com/user-attachments/assets/ea635bd6-998e-40a8-aed1-2810a13e6ecc" />
+
 ---
 
 ## Abstract
