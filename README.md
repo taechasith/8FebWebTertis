@@ -227,7 +227,7 @@ Because LLMs can hallucinate, the runtime system should assume:
 
 ---
 
-## Discussion (HCI)
+## Discussion: Human-Comouting Interation Science
 
 This project sits at an intersection of **persuasive technology**, **procedural rhetoric**, and **playful civic participation**.
 
